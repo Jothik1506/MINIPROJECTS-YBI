@@ -1,0 +1,65 @@
+# Sentiment Analysis with VADER (NLP Project)
+# Author: Sai Charan Dantu
+
+!pip install -q nltk vaderSentiment wordcloud
+import pandas as pd
+import nltk
+import matplotlib.pyplot as plt
+from wordcloud import WordCloud
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+nltk.download('vader_lexicon')
+
+# Sample dataset: List of sample product reviews
+data = {
+    "Review": [
+        "I absolutely love this product!",
+        "Terrible experience, I want a refund.",
+        "It was okay, nothing special.",
+        "Fantastic quality and fast shipping!",
+        "Worst service ever. Totally disappointed.",
+        "The packaging was neat and delivery on time.",
+        "Not worth the money. Very poor performance.",
+        "I'm satisfied with the purchase. Will buy again.",
+        "Meh, could be better.",
+        "Exceeded my expectations. Highly recommend!"
+    ]
+}
+
+df = pd.DataFrame(data)
+
+# Sentiment Analysis
+analyzer = SentimentIntensityAnalyzer()
+
+def get_sentiment(score):
+    if score >= 0.05:
+        return 'Positive'
+    elif score <= -0.05:
+        return 'Negative'
+    else:
+        return 'Neutral'
+
+df['Score'] = df['Review'].apply(lambda review: analyzer.polarity_scores(review)['compound'])
+df['Sentiment'] = df['Score'].apply(get_sentiment)
+
+# Display the DataFrame
+print(df)
+
+# Sentiment Counts Plot
+plt.figure(figsize=(6,4))
+df['Sentiment'].value_counts().plot(kind='bar', color=['green', 'red', 'gray'])
+plt.title('Sentiment Distribution')
+plt.xlabel('Sentiment')
+plt.ylabel('Number of Reviews')
+plt.grid(axis='y')
+plt.show()
+
+# Word Cloud
+text = " ".join(df['Review'])
+wordcloud = WordCloud(width=800, height=400, background_color='white').generate(text)
+plt.figure(figsize=(10,5))
+plt.imshow(wordcloud, interpolation='bilinear')
+plt.axis('off')
+plt.title('Review Word Cloud')
+plt.show()
+
+https://colab.research.google.com/drive/1FI4XKUkF8G3_2c6slMgAyr3-qjJwxpMM#scrollTo=vVXER_dfivp_    - link of google collab
